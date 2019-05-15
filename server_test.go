@@ -7,10 +7,6 @@ import (
 	"testing"
 )
 
-type StubPlayerStore struct {
-	scores map[string]int
-}
-
 func TestGETPlayers(t *testing.T) {
 	store := StubPlayerStore{
 		map[string]int{
@@ -39,6 +35,15 @@ func TestGETPlayers(t *testing.T) {
 	})
 }
 
+type StubPlayerStore struct {
+	scores map[string]int
+}
+
+func (s *StubPlayerStore) GetPlayerScore(name string) int {
+	score := s.scores[name]
+	return score
+}
+
 func newGetScoreRequest(name string) *http.Request {
 	req, _ := http.NewRequest(http.MethodGet, fmt.Sprintf("/players/%s", name), nil)
 	return req
@@ -46,12 +51,8 @@ func newGetScoreRequest(name string) *http.Request {
 
 func assertResponseBody(t *testing.T, got, want string) {
 	t.Helper()
-	if got != want {
-		t.Errorf("response body is wrong, got '%s' want '%s'", got, want)
-	}
-}
 
-func (s *StubPlayerStore) GetPlayerScore(name string) int {
-	score := s.scores[name]
-	return score
+	if got != want {
+		t.Errorf("got '%s', want '%s'", got, want)
+	}
 }
